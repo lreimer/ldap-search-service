@@ -38,7 +38,7 @@ public class LdapContextProvider {
         env.put("com.sun.jndi.ldap.connect.pool.protocol", "plain ssl");
         env.put("com.sun.jndi.ldap.connect.pool.timeout", "60000");
         env.put("com.sun.jndi.ldap.connect.pool.prefsize", "5");
-        env.put("com.sun.jndi.ldap.connect.pool.maxsize", "25");
+        env.put("com.sun.jndi.ldap.connect.pool.maxsize", "50");
         env.put("com.sun.jndi.ldap.connect.timeout", "5000");
         env.put("com.sun.jndi.ldap.read.timeout", "10000");
 

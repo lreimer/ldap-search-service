@@ -24,7 +24,10 @@ public class LdapSearchRepository {
         List<Map<String, Object>> results = new ArrayList<>();
 
         SearchControls searchControls = new SearchControls();
-        searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+        searchControls.setTimeLimit(10000);
+        searchControls.setDerefLinkFlag(false);
+        searchControls.setCountLimit(0);
 
         NamingEnumeration<SearchResult> search = ldapContext.search(dn, filter, searchControls);
 
