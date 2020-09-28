@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  microservice:
+    image: ldap-search-service:1.0.0
+    environment:
+      - QUARKUS_DATASOURCE_USERNAME=quarkus
+      - QUARKUS_DATASOURCE_PASSWORD=1qay2wsx
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://database:5432/weather
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    labels:
+      kompose.service.type: loadbalancer
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 512M
+          # cpus: '2.0'
+          cpus: '4.0'
+
+  database:
+    image: "postgres:11.9"
+    environment:
+      - POSTGRES_USER=quarkus
+      - POSTGRES_PASSWORD=1qay2wsx
+      - POSTGRES_DB=weather
+    ports:
+      - "5432:5432"
+    labels:
+      kompose.service.type: nodeport
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 128M
+          cpus: '1.0'

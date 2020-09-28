@@ -1,0 +1,32 @@
+FROM oracle/graalvm-ce:20.1.0-java11 as builder
+
+ENV GRAALVM_HOME=$JAVA_HOME
+RUN ${GRAALVM_HOME}/bin/gu install native-image
+
+WORKDIR /quarkus
+
+COPY .mvn/ ./.mvn/
+COPY mvnw ./
+COPY pom.xml ./
+
+RUN ./mvnw dependency:resolve dependency:resolve-plugins
+
+COPY src/ src/
+RUN ./mvnw package -DskipTests -Pnative
+
+FROM gcr.io/distroless/cc-debian10
+
+COPY --from=amd64/busybox:1.31.1 /bin/busybox /busybox/busybox
+RUN ["/busybox/busybox", "--install", "/bin"]
+
+WORKDIR /quarkus
+
+EXPOSE 8080 9090
+
+ENV QUARKUS_DATASOURCE_USERNAME=quarkus QUARKUS_DATASOURCE_PASSWORD=1qay2wsx
+ENV QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://database:5432/weather
+
+ENTRYPOINT ["./ldap-search-service-1.0.0-runner", "-Dquarkus.http.host=0.0.0.0", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"]
+
+COPY --from=builder /usr/lib64/libz.* /lib/x86_64-linux-gnu/
+COPY --from=builder /quarkus/target/*-runner ./
